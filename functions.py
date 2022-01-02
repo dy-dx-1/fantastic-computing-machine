@@ -14,9 +14,51 @@ class NotFunctionError(Exception):
     message: outputed explanation message on raise 
     """ 
 
+
 class Function:
-    x = symbols('x')  # The symbol we'll use for all the calculations  
-    @staticmethod 
+    x = symbols('x')  # The variable we'll use for all the calculations, represented by x in the class by default 
+
+    @classmethod 
+    def get_symbol(cls):
+        return f"The current accepted variable is {cls.x}, use the change_var method to change it" 
+
+    @classmethod
+    def change_var(cls, new_var:str):
+        cls.x = symbols(str(new_var)) 
+
+    def __init__(self, fun):
+        self.fun = parse_expr(fun)
+        
+    #TODO ADD OPTIONAL DECORATOR FOR NON SIMPLIFIED FUNCTIONS, WITH AN "="
+    def numerical_integration_rectangles(self, lower_bound:int = 0, superior_bound:int =10, rectangle_count=100)->float: 
+        base = (superior_bound-lower_bound)/rectangle_count 
+        total_area = 0 
+        lower_x = lower_bound  
+        for _ in range(rectangle_count): 
+            x = lower_x + (base/2)
+            total_area += self.fun.subs(self.x, x) * base 
+            lower_x += base # shifting the lower bound towards the right 
+        return total_area 
+
+    def eval_integral(self, numerical=True, lower_bound: int = 0, superior_bound:int = 10):
+        if numerical: return integrate(self.fun, (self.x, lower_bound, superior_bound))
+        return integrate(self.fun, self.x) 
+
+    def eval_derivative(self, x: float=0, numerical=True, order:int=1)->float: 
+        if numerical: 
+            return diff(self.fun, self.x, int(order)).subs(self.x, x) 
+        return diff(self.fun, self.x, int(order))
+    
+    def calculate_outputs(self, abs: array = array([n for n in range(0, 110, 10)]))->dict: # Calculates outputs for the function
+        try: 
+              # returns a dict showing the x's and associated y's 
+            return dict(zip(abs, lambdify(self.x, self.fun, "numpy")(abs)))
+        except TypeError: 
+            return {"Error": """Please input a list of the X values to compute. Ex: "[0, 20, 40]"}"""} 
+
+
+class PolynomialFunction(Function):
+    @staticmethod #TODO: optimize this 
     def transform_into_expression(function_string):
         if "=" in function_string: return None # We are assuming y = [x expression] form 
         basic_operations = ['/', '*', '-', '+', '^']
@@ -52,30 +94,13 @@ class Function:
         f = Function.transform_into_expression(fun)
         if f is None: raise NotFunctionError(str, NotFunctionError.ERR_NOT_FUN_INPUT)
         self.fun = parse_expr(f)
-        
-    #TODO ADD OPTIONAL DECORATOR FOR NON SIMPLIFIED FUNCTIONS, WITH AN "="
-    def numerical_integration_rectangles(self, lower_bound:int = 0, superior_bound:int =10, rectangle_count=100)->float: 
-        base = (superior_bound-lower_bound)/rectangle_count 
-        total_area = 0 
-        lower_x = lower_bound  
-        for _ in range(rectangle_count): 
-            x = lower_x + (base/2)
-            total_area += self.fun.subs(self.x, x) * base 
-            lower_x += base # shifting the lower bound towards the right 
-        return total_area 
 
-    def eval_integral(self, numerical=True, lower_bound: int = 0, superior_bound:int = 10):
-        if numerical: return integrate(self.fun, (self.x, lower_bound, superior_bound))
-        return integrate(self.fun, self.x) 
 
-    def eval_derivative(self, x: float=0, numerical=True, order:int=1)->float: 
-        if numerical: 
-            return diff(self.fun, self.x, int(order)).subs(self.x, x) 
-        return diff(self.fun, self.x, int(order))
+class TranscendentalFunction(Function): 
+    def __init__(self, fun):
+        self.fun = parse_expr(fun)  # TODO: right now directly parsing but we'll have to add some checks 
     
-    def calculate_outputs(self, abs: array = array([n for n in range(0, 110, 10)]))->dict: # Calculates outputs for the function
-        try: 
-              # returns a dict showing the x's and associated y's 
-            return dict(zip(abs, lambdify(self.x, self.fun, "numpy")(abs)))
-        except TypeError: 
-            return {"Error": """Please input a list of the X values to compute. Ex: "[0, 20, 40]"}"""} 
+    def taylor_approx(self, degree: int)->str: # TODO: return taylor approximation 
+        pass 
+
+a = TranscendentalFunction("sin(x)")
