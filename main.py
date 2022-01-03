@@ -1,6 +1,8 @@
 import tkinter as tk
 from tkinter.constants import NSEW
 
+from basic_operations import process_result
+
 root = tk.Tk()
 root.title("Calculator") 
 root.geometry("400x600") 
@@ -15,10 +17,11 @@ def set_up_grid():
     output_label.grid(row=0, column=0, columnspan=4, sticky=NSEW)
     create_buttons() 
 
-def update_screen(new_text): 
+def append_screen(new_text): 
         old_text = output_label.cget("text") 
         output_label.configure(text= f"{old_text}{new_text}")
-
+def update_screen(new_text): 
+    output_label.configure(text = new_text)
 def create_buttons(): #TODO: use symbols instead of text for the text 
     m_der = tk.Button(root, text="d/dxE") 
     m_inter = tk.Button(root, text = "intE") 
@@ -26,26 +29,26 @@ def create_buttons(): #TODO: use symbols instead of text for the text
     inter = tk.Button(root, text = "inte") 
     fun = tk.Button(root, text = "f(x)") 
     system = tk.Button(root, text = "{}") 
-    var = tk.Button(root, text = "x", command=lambda: update_screen("x")) 
+    var = tk.Button(root, text = "x", command=lambda: append_screen("x")) 
 
-    sum_ = tk.Button(root, text ="+", command=lambda: update_screen("+")) 
-    subs = tk.Button(root, text = "-", command=lambda: update_screen("-")) 
-    div = tk.Button(root, text = "/", command=lambda: update_screen("/")) 
-    mul = tk.Button(root, text = "*", command=lambda: update_screen("*")) 
+    sum_ = tk.Button(root, text ="+", command=lambda: append_screen("+")) 
+    subs = tk.Button(root, text = "-", command=lambda: append_screen("-")) 
+    div = tk.Button(root, text = "/", command=lambda: append_screen("/")) 
+    mul = tk.Button(root, text = "*", command=lambda: append_screen("*")) 
     clear = tk.Button(root, text = "CS") 
-    equals = tk.Button(root, text="=") 
-    dot = tk.Button(root, text= ".", command=lambda: update_screen(".")) 
+    equals = tk.Button(root, text="=", command=lambda: update_screen(process_result(output_label.cget("text"))))  ## This is just temp for now well have to include support for other adavanced ops 
+    dot = tk.Button(root, text= ".", command=lambda: append_screen(".")) 
 
-    one = tk.Button(root, text = "1", command=lambda: update_screen("1")) 
-    two = tk.Button(root, text = "2", command=lambda: update_screen("2")) 
-    three = tk.Button(root, text = "3", command=lambda: update_screen("3")) 
-    four = tk.Button(root, text = "4", command=lambda: update_screen("4")) 
-    five = tk.Button(root, text="5", command=lambda: update_screen("5")) 
-    six = tk.Button(root, text= "6", command=lambda: update_screen("6")) 
-    seven = tk.Button(root, text = "7", command=lambda: update_screen("7")) 
-    eight = tk.Button(root, text="8", command=lambda: update_screen("8")) 
-    nine = tk.Button(root, text="9", command=lambda: update_screen("9")) 
-    o = tk.Button(root, text="0", command=lambda: update_screen("0")) 
+    one = tk.Button(root, text = "1", command=lambda: append_screen("1")) 
+    two = tk.Button(root, text = "2", command=lambda: append_screen("2")) 
+    three = tk.Button(root, text = "3", command=lambda: append_screen("3")) 
+    four = tk.Button(root, text = "4", command=lambda: append_screen("4")) 
+    five = tk.Button(root, text="5", command=lambda: append_screen("5")) 
+    six = tk.Button(root, text= "6", command=lambda: append_screen("6")) 
+    seven = tk.Button(root, text = "7", command=lambda: append_screen("7")) 
+    eight = tk.Button(root, text="8", command=lambda: append_screen("8")) 
+    nine = tk.Button(root, text="9", command=lambda: append_screen("9")) 
+    o = tk.Button(root, text="0", command=lambda: append_screen("0")) 
     
     button_list = [system, inter, m_inter, var, fun, der, m_der, div, one, two, three, mul, four, five, six, subs,seven, eight, nine, sum_, o, dot, clear, equals]
     row = 0 
