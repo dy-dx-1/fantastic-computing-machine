@@ -4,5 +4,3 @@ def process_result(input):  # This will be called if the other buttons for funct
     while " " in input: input = input.replace(" ", "") 
     while "^" in input: input = input.replace("^", "**") 
     return eval(input, {"__builtins__":None})  ########################################ONLY USING EVAL SINCE THIS IS A SMALL NON PRODUCTION PROJECT 
-
-print(process_result("4 - + 45^2 - 23")) 
