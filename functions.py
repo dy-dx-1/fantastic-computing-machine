@@ -1,8 +1,7 @@
 from numpy import array
 from sympy import symbols, lambdify, diff, integrate
-from sympy.functions.elementary.complexes import polar_lift
 from sympy.parsing.sympy_parser import parse_expr
-from re import search, split, sub
+from re import findall, split, sub
 
 class NotFunctionError(Exception): 
     ERR_NOT_FUN_INPUT = """This is not a valid way to input a function.
@@ -50,8 +49,9 @@ class Function:
             return diff(self.fun, self.x, int(order)).subs(self.x, x) 
         return diff(self.fun, self.x, int(order))
     
-    def calculate_outputs(self, abs: array = array([n for n in range(0, 110, 10)]))->dict: # Calculates outputs for the function
+    def calculate_outputs(self, abs: list = [n for n in range(0, 110, 10)])->dict: # Calculates outputs for the function
         try: 
+            abs = array(abs) 
               # returns a dict showing the x's and associated y's 
             return dict(zip(abs, lambdify(self.x, self.fun, "numpy")(abs)))
         except TypeError: 
@@ -60,15 +60,15 @@ class Function:
 
 class PolynomialFunction(Function):
     @staticmethod #TODO: optimize this 
-    def transform_into_expression(function_string):
+    def transform_into_function(function_string):
         if "=" in function_string: return None # We are assuming y = [x expression] form 
-        basic_operations = ['/', '*', '-', '+', '^']
-        match_obj_var = search(r"[^\s\+\-\/\*\^1-9]", function_string) 
-        if match_obj_var is None: return None 
-        var = match_obj_var.group(0) 
+        vars = findall(r"[^\s\+\-\/\*\^1-9]", function_string) 
+        if vars == []: return None 
         # Now, checking if another variable is present
-        for _ in function_string: 
-            if not _.isnumeric() and _ not in basic_operations and _!=var: return None
+        vars = list(set(vars)) # removing excess and reconverting to list to access by index after 
+        if len(vars) != 1: return None # Means we have more than one var (ex: ['x', 'y'])
+        var = vars[0]
+        del vars # we don't need this anymore 
         str_list = list(function_string) 
         for i, char in enumerate(str_list): # Now check to the left and right if there is a digit without operator 
             if char == var:
@@ -80,10 +80,10 @@ class PolynomialFunction(Function):
                     if str_list[i-1].isnumeric(): str_list.insert(i, "*")
                     if str_list[i+1].isnumeric(): str_list.insert(i, "*")          
         expr = "".join(str_list)
+        del str_list
         if "xx" in expr: # if the person inputted something like 3xxx+4, it -> 3*xxx+4. I couldn't manage to make it work with the loop, so I'll just brute force it
             equivalences = [("x*"*n)[:-1] for n in range(2,7)]
-            expr_l = split(r"[+-/*\s]", expr)
-            for element in expr_l: 
+            for element in split(r"[+-/*\s]", expr): 
                 if "xx" in element: 
                     for degree in range(2,7): 
                         if "x"*degree in element: 
@@ -92,19 +92,18 @@ class PolynomialFunction(Function):
         return expr                  
 
     def __init__(self, fun : str):  # Default creation is with 'standard' form, ex: "4x + 45-4x^2"
-        f = self.transform_into_expression(fun)
+        f = self.transform_into_function(fun)
         if f is None: raise NotFunctionError(str, NotFunctionError.ERR_NOT_FUN_INPUT)
         self.fun = parse_expr(f)
-        #self.fun = parse_expr(fun)
+        
 
 
 class TranscendentalFunction(Function): 
     def __init__(self, fun):
         self.fun = parse_expr(fun)  # TODO: right now directly parsing but we'll have to add some checks 
-    
     def taylor_approx(self, degree: int)->str: # TODO: return taylor approximation 
         pass 
 
-a = TranscendentalFunction("sin(x)+xx")
+a = TranscendentalFunction("3*xx+3*2-xxx")
 b= PolynomialFunction("3*xx+3*2-xxx")
 print(b.eval_derivative())
