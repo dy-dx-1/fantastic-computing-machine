@@ -32,24 +32,19 @@ def create_buttons(): #TODO: use symbols instead of text for the text
     o = tk.Button(root, text="0") 
     
     button_list = [system, inter, m_inter, var, fun, der, m_der, div, one, two, three, mul, four, five, six, subs,seven, eight, nine, sum_, o, dot, clear, equals]
-    guide = [1+4*n for n in range(6)]
     row = 0 
     for index, button in enumerate(button_list):
         if index % 4==0: 
             column = 0
         elif index % 2==0: 
             column = 2 
-        elif index in guide:
+        elif (index+3)%4==0:
             column = 1 
         else: 
             column=3
-            #button.columnconfigure(index = column, weight= 1)  
-            #button.rowconfigure(index = row, weight= 1)
             button.grid(row= row+1, column= column, sticky=NSEW) 
             row+=1 
             continue
-        #button.columnconfigure(index = column, weight= 1)  
-        #button.rowconfigure(index = row, weight= 1)
         button.grid(row= row+1, column= column, sticky=NSEW) 
         #### All of these if/elses and the use of guide are based on patterns I saw in the 'index matrix' -> serve to avoid an O(n^2) solution 
         # (even though it doesnt really matter with such small data count) 
@@ -57,7 +52,7 @@ def create_buttons(): #TODO: use symbols instead of text for the text
 def create_base():
     # First let's create the base 
     root.title("Calculator") 
-    #root.geometry("400x600") 
+    root.geometry("400x600") 
     root.rowconfigure(6)
     root.columnconfigure(3) 
     for n in range(6): 

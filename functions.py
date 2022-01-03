@@ -1,5 +1,6 @@
 from numpy import array
 from sympy import symbols, lambdify, diff, integrate
+from sympy.functions.elementary.complexes import polar_lift
 from sympy.parsing.sympy_parser import parse_expr
 from re import search, split, sub
 
@@ -40,11 +41,11 @@ class Function:
             lower_x += base # shifting the lower bound towards the right 
         return total_area 
 
-    def eval_integral(self, numerical=True, lower_bound: int = 0, superior_bound:int = 10):
+    def eval_integral(self, numerical=False, lower_bound: int = 0, superior_bound:int = 10):
         if numerical: return integrate(self.fun, (self.x, lower_bound, superior_bound))
         return integrate(self.fun, self.x) 
 
-    def eval_derivative(self, x: float=0, numerical=True, order:int=1)->float: 
+    def eval_derivative(self, numerical=False, x: float=0, order:int=1)->float: 
         if numerical: 
             return diff(self.fun, self.x, int(order)).subs(self.x, x) 
         return diff(self.fun, self.x, int(order))
@@ -91,9 +92,10 @@ class PolynomialFunction(Function):
         return expr                  
 
     def __init__(self, fun : str):  # Default creation is with 'standard' form, ex: "4x + 45-4x^2"
-        f = Function.transform_into_expression(fun)
+        f = self.transform_into_expression(fun)
         if f is None: raise NotFunctionError(str, NotFunctionError.ERR_NOT_FUN_INPUT)
         self.fun = parse_expr(f)
+        #self.fun = parse_expr(fun)
 
 
 class TranscendentalFunction(Function): 
@@ -103,4 +105,6 @@ class TranscendentalFunction(Function):
     def taylor_approx(self, degree: int)->str: # TODO: return taylor approximation 
         pass 
 
-a = TranscendentalFunction("sin(x)")
+a = TranscendentalFunction("sin(x)+xx")
+b= PolynomialFunction("3*xx+3*2-xxx")
+print(b.eval_derivative())
