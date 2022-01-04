@@ -18,6 +18,20 @@ class NotFunctionError(Exception):
 class Function:
     x = symbols('x')  # The variable we'll use for all the calculations, represented by x in the class by default 
 
+    @staticmethod
+    def process_implicit_mul(string, var): 
+        str_list = list(string) 
+        for i, char in enumerate(str_list): # Now check to the left and right if there is a digit without operator 
+            if char == var:
+                if i == 0: 
+                    if str_list[1].isnumeric(): str_list.insert(1, "*") 
+                elif i == len(str_list)-1: 
+                    if str_list[len(str_list)-2].isnumeric(): str_list.insert(len(str_list)-1, "*")  
+                else: 
+                    if str_list[i-1].isnumeric(): str_list.insert(i, "*")
+                    if str_list[i+1].isnumeric(): str_list.insert(i, "*")  
+        return "".join(str_list)
+
     @classmethod 
     def get_symbol(cls):
         return f"The current accepted variable is {cls.x}, use the change_var method to change it" 
@@ -28,8 +42,23 @@ class Function:
 
     def __init__(self, fun):
         self.fun = parse_expr(fun)
-        
-    #TODO ADD OPTIONAL DECORATOR FOR NON SIMPLIFIED FUNCTIONS, WITH AN "="
+    
+    def return_function(self): 
+        return self.fun
+
+    def __repr__(self): 
+        return f"""Function('{self.fun}', '{type(self)}')"""
+
+    def __add__(self, other): 
+        if type(other) is (PolynomialFunction or TranscendentalFunction): self.fun += other.return_function()
+        elif type(other) is int: self.fun += other 
+        else: pass # TODO: raise an error 
+
+    def __sub__(self, other): 
+            if type(other) is (PolynomialFunction or TranscendentalFunction): self.fun -= other.return_function()
+            elif type(other) is int: self.fun -= other 
+            else: pass # TODO: raise an error 
+
     def numerical_integration_rectangles(self, lower_bound:int = 0, superior_bound:int =10, rectangle_count=100)->float: 
         base = (superior_bound-lower_bound)/rectangle_count 
         total_area = 0 
@@ -69,18 +98,7 @@ class PolynomialFunction(Function):
         if len(vars) != 1: return None # Means we have more than one var (ex: ['x', 'y'])
         var = vars[0]
         del vars # we don't need this anymore 
-        str_list = list(function_string) 
-        for i, char in enumerate(str_list): # Now check to the left and right if there is a digit without operator 
-            if char == var:
-                if i == 0: 
-                    if str_list[1].isnumeric(): str_list.insert(1, "*") 
-                elif i == len(str_list)-1: 
-                    if str_list[len(str_list)-2].isnumeric(): str_list.insert(len(str_list)-1, "*")  
-                else: 
-                    if str_list[i-1].isnumeric(): str_list.insert(i, "*")
-                    if str_list[i+1].isnumeric(): str_list.insert(i, "*")          
-        expr = "".join(str_list)
-        del str_list
+        expr = Function.process_implicit_mul(function_string, var)
         if "xx" in expr: # if the person inputted something like 3xxx+4, it -> 3*xxx+4. I couldn't manage to make it work with the loop, so I'll just brute force it
             equivalences = [("x*"*n)[:-1] for n in range(2,7)]
             for element in split(r"[+-/*\s]", expr): 
@@ -97,7 +115,6 @@ class PolynomialFunction(Function):
         self.fun = parse_expr(f)
         
 
-
 class TranscendentalFunction(Function): 
     def __init__(self, fun):
         self.fun = parse_expr(fun)  # TODO: right now directly parsing but we'll have to add some checks 
@@ -105,5 +122,6 @@ class TranscendentalFunction(Function):
         pass 
 
 a = TranscendentalFunction("3*xx+3*2-xxx")
-b= PolynomialFunction("3*xx+3*2-xxx")
-print(b.eval_derivative())
+b= PolynomialFunction("4*x")
+c = PolynomialFunction("3*x+2")
+
