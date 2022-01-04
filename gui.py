@@ -18,22 +18,22 @@ def set_up_grid():
     create_buttons() 
 
 def create_buttons(): #TODO: use symbols instead of text for the text 
-    m_der = tk.Button(root, text="d/dxE") 
-    m_inter = tk.Button(root, text = "intE") 
-    der = tk.Button(root, text = "d/dx") 
-    inter = tk.Button(root, text = "inte") 
+    m_der = tk.Button(root, text="d/dx(f|eval)", command=lambda: append_screen("d/dx|("), state="disabled") 
+    m_inter = tk.Button(root, text = "∫|x=eval", command= lambda: append_screen("∫|("), state="disabled") 
+    der = tk.Button(root, text = "d/dx", command = lambda: append_screen("d/dx("), state="disabled") 
+    inter = tk.Button(root, text = "∫", command=lambda: append_screen("∫"), state = "disabled")   
     fun = tk.Button(root, text = "f(x)", command=lambda: function_mode()) 
-    system = tk.Button(root, text = "{}") 
+    system = tk.Button(root, text = "{eq|eq}", command=lambda:update_screen("{")) 
     var = tk.Button(root, text = "x", command=lambda: append_screen("x"), state="disabled") 
     
-    sin = tk.Button(root, text="sin()") 
-    cos = tk.Button(root, text="cos()") 
-    tan = tk.Button(root, text="tan()") 
-    log = tk.Button(root, text="log()") 
-    e = tk.Button(root, text="e") 
-    pi  = tk.Button(root, text="π") 
-    lpar = tk.Button(root, text = "(") 
-    rpar = tk.Button(root, text = ")") 
+    sin = tk.Button(root, text="sin()", command = lambda:append_screen("sin(")) 
+    cos = tk.Button(root, text="cos()", command=lambda: append_screen("cos(")) 
+    tan = tk.Button(root, text="tan()", command=lambda: append_screen("tan("))  
+    log = tk.Button(root, text="log(eval;base)", command=lambda: append_screen("log(")) 
+    sep = tk.Button(root, text="|", command=lambda: append_screen("|")) 
+    pi  = tk.Button(root, text="π", command=lambda: append_screen("π")) 
+    lpar = tk.Button(root, text = "(", command = lambda: append_screen("("))  
+    rpar = tk.Button(root, text = ")", command = lambda: append_screen(")")) 
     
     sum_ = tk.Button(root, text ="+", command=lambda: append_screen("+")) 
     subs = tk.Button(root, text = "-", command=lambda: append_screen("-")) 
@@ -60,13 +60,13 @@ def create_buttons(): #TODO: use symbols instead of text for the text
 
     def update_screen(new_text): 
         output_label.configure(text = new_text)
-        var["state"] = "disabled"
+        for button in [m_der, m_inter, inter, der, var]: button["state"] = "disabled"
 
     def function_mode():
-        output_label.configure(text= "f(x) = ") 
-        var["state"] = "normal"
+        output_label.configure(text= "f(x); ") 
+        for button in [m_der, m_inter, inter, der, var]: button["state"] = "normal"
 
-    button_list = [system, inter, m_inter, var, fun, der, m_der, div, one, two, three, mul, four, five, six, subs,seven, eight, nine, sum_, o, dot, clear, equals, sin, cos, tan, log, e, pi, lpar, rpar ]
+    button_list = [system, inter, m_inter, var, fun, der, m_der, div, one, two, three, mul, four, five, six, subs,seven, eight, nine, sum_, o, dot, clear, equals, sin, cos, tan, log, sep, pi, lpar, rpar ]
     row = 0 
     for index, button in enumerate(button_list):
         if index % 4==0: 
