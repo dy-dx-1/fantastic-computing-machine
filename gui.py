@@ -10,7 +10,7 @@ root.columnconfigure(3)
 output_label = tk.Label(root, text = "")
 
 def set_up_grid():
-    for n in range(6): 
+    for n in range(9): 
         tk.Grid.rowconfigure(root, index = n, weight=1) 
         if n<=3: tk.Grid.columnconfigure(root, index=n, weight = 1) 
     # Placing the output label 
@@ -25,7 +25,16 @@ def create_buttons(): #TODO: use symbols instead of text for the text
     fun = tk.Button(root, text = "f(x)", command=lambda: function_mode()) 
     system = tk.Button(root, text = "{}") 
     var = tk.Button(root, text = "x", command=lambda: append_screen("x"), state="disabled") 
-
+    
+    sin = tk.Button(root, text="sin()") 
+    cos = tk.Button(root, text="cos()") 
+    tan = tk.Button(root, text="tan()") 
+    log = tk.Button(root, text="log()") 
+    e = tk.Button(root, text="e") 
+    pi  = tk.Button(root, text="π") 
+    lpar = tk.Button(root, text = "(") 
+    rpar = tk.Button(root, text = ")") 
+    
     sum_ = tk.Button(root, text ="+", command=lambda: append_screen("+")) 
     subs = tk.Button(root, text = "-", command=lambda: append_screen("-")) 
     div = tk.Button(root, text = "/", command=lambda: append_screen("/")) 
@@ -57,7 +66,7 @@ def create_buttons(): #TODO: use symbols instead of text for the text
         output_label.configure(text= "f(x) = ") 
         var["state"] = "normal"
 
-    button_list = [system, inter, m_inter, var, fun, der, m_der, div, one, two, three, mul, four, five, six, subs,seven, eight, nine, sum_, o, dot, clear, equals]
+    button_list = [system, inter, m_inter, var, fun, der, m_der, div, one, two, three, mul, four, five, six, subs,seven, eight, nine, sum_, o, dot, clear, equals, sin, cos, tan, log, e, pi, lpar, rpar ]
     row = 0 
     for index, button in enumerate(button_list):
         if index % 4==0: 
