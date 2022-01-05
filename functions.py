@@ -19,25 +19,30 @@ class Function:
     x = symbols('x')  # The variable we'll use for all the calculations, represented by x in the class by default 
 
     @staticmethod
-    def process_implicit_mul(string, var): 
+    def process_implicit_mul(string:str, var:str)->str: 
         str_list = list(string) 
         for i, char in enumerate(str_list): # Now check to the left and right if there is a digit without operator 
             if char == var:
-                if i == 0: 
+                if i == 0:  # If it's at the very start, add multiplication to the right of term 
                     if str_list[1].isnumeric(): str_list.insert(1, "*") 
-                elif i == len(str_list)-1: 
+                elif i == len(str_list)-1:  # If it's at the very end, add it to the left of term 
                     if str_list[len(str_list)-2].isnumeric(): str_list.insert(len(str_list)-1, "*")  
-                else: 
+                else: # if it's in another place, check right and left and then insert where needed 
                     if str_list[i-1].isnumeric(): str_list.insert(i, "*")
                     if str_list[i+1].isnumeric(): str_list.insert(i, "*")  
         return "".join(str_list)
 
+    @staticmethod 
+    def find_type(fun:str)->str: 
+        for e in ["sin", "cos", "tan", "log", "ln"]: 
+            if e in fun: return "Transcendental"
+        return "Polynomial"
     @classmethod 
-    def get_symbol(cls):
+    def get_symbol(cls)->str:
         return f"The current accepted variable is {cls.x}, use the change_var method to change it" 
 
     @classmethod
-    def change_var(cls, new_var:str):
+    def change_var(cls, new_var:str)->None:
         cls.x = symbols(str(new_var)) 
 
     def __init__(self, fun):
@@ -120,8 +125,3 @@ class TranscendentalFunction(Function):
         self.fun = parse_expr(fun)  # TODO: right now directly parsing but we'll have to add some checks 
     def taylor_approx(self, degree: int)->str: # TODO: return taylor approximation 
         pass 
-
-a = TranscendentalFunction("3*xx+3*2-xxx")
-b= PolynomialFunction("4*x")
-c = PolynomialFunction("3*x+2")
-

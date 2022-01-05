@@ -63,7 +63,7 @@ def create_buttons(): #TODO: use symbols instead of text for the text
         for button in [m_der, m_inter, inter, der, var]: button["state"] = "disabled"
 
     def function_mode():
-        output_label.configure(text= "f(x); ") 
+        output_label.configure(text= "f(x);") 
         for button in [m_der, m_inter, inter, der, var]: button["state"] = "normal"
 
     button_list = [system, inter, m_inter, var, fun, der, m_der, div, one, two, three, mul, four, five, six, subs,seven, eight, nine, sum_, o, dot, clear, equals, sin, cos, tan, log, sep, pi, lpar, rpar ]

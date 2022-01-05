@@ -1,6 +1,6 @@
 from sympy import symbols, parse_expr, evalf
 x = symbols("x")
-from functions import Function
+from functions import Function, PolynomialFunction, TranscendentalFunction
 def process_result(input):  # processes what is currently on the calculator screen 
     if not input.count('(') == input.count(')'): return "Parenthesis's unmatched."
     while " " in input: input = input.replace(" ", "")  
@@ -17,15 +17,21 @@ def process_result(input):  # processes what is currently on the calculator scre
     throw a syntax error if user doesn't explicit the mul's (ex: 5sin(x) should be 5*sin(x))
     """
     # if we pass here, we need to evaluate further since we got a calculus request 
+    input = input.replace("f(x);", "") 
+    if "x" not in input: return "Didn't input function in function mode"
+    if Function.find_type(input) == "Polynomial": fun = PolynomialFunction(input) 
+    else: fun = TranscendentalFunction(input) 
+
+    print(fun)
     if "d/dx|(" in input:  # Order of checks is important since the lower elifs's are inside the higher checks but not the other way around 
         pass
     elif "∫|(" in input:
         pass 
     elif "∫" in input: 
         pass
-    elif "d/dx|(" in input: 
+    elif "d/dx" in input: 
         pass 
     else:
-        pass # handle thing 
+        pass # handle thing, show error 
 
 
