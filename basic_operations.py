@@ -5,11 +5,27 @@ def process_result(input):  # processes what is currently on the calculator scre
     if not input.count('(') == input.count(')'): return "Parenthesis's unmatched."
     while " " in input: input = input.replace(" ", "")  
     while "^" in input: input = input.replace("^", "**")
-    try: 
-        expr = parse_expr(input)
-    except SyntaxError: 
-        return "SyntaxError"
-    if input[:3] != "f(x)": return expr.evalf()  ########################################ONLY USING EVAL SINCE THIS IS A SMALL NON PRODUCTION PROJECT
+    #TODO parse logs
+    if input[:4] != "f(x)":
+        try: 
+            expr = parse_expr(input)
+            return round(expr.evalf(), 3) 
+        except SyntaxError: 
+            return "SyntaxError, try again"
+    """ 
+    We can't (easily implement) use process_implicit_mul if transcendental functions are in the calculations so, for now, we will just
+    throw a syntax error if user doesn't explicit the mul's (ex: 5sin(x) should be 5*sin(x))
+    """
+    # if we pass here, we need to evaluate further since we got a calculus request 
+    if "d/dx|(" in input:  # Order of checks is important since the lower elifs's are inside the higher checks but not the other way around 
+        pass
+    elif "∫|(" in input:
+        pass 
+    elif "∫" in input: 
+        pass
+    elif "d/dx|(" in input: 
+        pass 
+    else:
+        pass # handle thing 
 
-    # if we pass here, we need to evaluate further 
-    # input = Function.process_implicit_mul(input, x)
+
