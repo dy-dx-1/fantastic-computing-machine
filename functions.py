@@ -16,8 +16,10 @@ class NotFunctionError(Exception):
 
 
 class Function:
-    x = symbols('x')  # The variable we'll use for all the calculations, represented by x in the class by default 
+    "X is the variable that is used by default in our calculations"
+    x = symbols('x')  
 
+    "Function that takes a string and explicits the implicit multiplications with a specific var, ex: 3x+3-> 3*x+3" 
     @staticmethod
     def process_implicit_mul(string:str, var:str)->str: 
         str_list = list(string) 
@@ -32,15 +34,19 @@ class Function:
                     if str_list[i+1].isnumeric(): str_list.insert(i, "*")  
         return "".join(str_list)
 
+    "Determines if a function is Transcendental or Polynomial"
     @staticmethod 
     def find_type(fun:str)->str: 
         for e in ["sin", "cos", "tan", "log", "ln"]: 
             if e in fun: return "Transcendental"
         return "Polynomial"
+    
+    "Class method that returns the current symbol used for the calculations inside the class"
     @classmethod 
     def get_symbol(cls)->str:
         return f"The current accepted variable is {cls.x}, use the change_var method to change it" 
 
+    "Class method that changes the symbol used for calculations"
     @classmethod
     def change_var(cls, new_var:str)->None:
         cls.x = symbols(str(new_var)) 
@@ -48,22 +54,27 @@ class Function:
     def __init__(self, fun):
         self.fun = parse_expr(fun)
     
+    "Returns the function that is represented by the function object"
     def return_function(self): 
         return self.fun
 
+    "Returns the function and type"
     def __repr__(self): 
         return f"""Function('{self.fun}', '{type(self)}')"""
 
+    "Defines adding 2 functions together with the '+' operator"
     def __add__(self, other): 
         if type(other) is (PolynomialFunction or TranscendentalFunction): self.fun += other.return_function()
         elif type(other) is int: self.fun += other 
         else: pass # TODO: raise an error 
 
+    "Defines substracting 2 functions together with the '-' operator"
     def __sub__(self, other): 
             if type(other) is (PolynomialFunction or TranscendentalFunction): self.fun -= other.return_function()
             elif type(other) is int: self.fun -= other 
             else: pass # TODO: raise an error 
 
+    "Returns the result of numerical integration with the method of rectangles"
     def numerical_integration_rectangles(self, lower_bound:int = 0, superior_bound:int =10, rectangle_count=100)->float: 
         base = (superior_bound-lower_bound)/rectangle_count 
         total_area = 0 
@@ -74,15 +85,18 @@ class Function:
             lower_x += base # shifting the lower bound towards the right 
         return total_area 
 
+    "Evaluates the indefinite or definite integral through sympy"
     def eval_integral(self, numerical=False, lower_bound: int = 0, superior_bound:int = 10):
         if numerical: return integrate(self.fun, (self.x, lower_bound, superior_bound))
         return integrate(self.fun, self.x) 
 
+    "Evaluates the general derivative or at a point through sympy"
     def eval_derivative(self, numerical=False, x: float=0, order:int=1)->float: 
         if numerical: 
             return diff(self.fun, self.x, int(order)).subs(self.x, x) 
         return diff(self.fun, self.x, int(order))
     
+    "Calculates the outputs of the function over a list of numbers"
     def calculate_outputs(self, abs: list = [n for n in range(0, 110, 10)])->dict: # Calculates outputs for the function
         try: 
             abs = array(abs) 
@@ -93,8 +107,9 @@ class Function:
 
 
 class PolynomialFunction(Function):
+    "Transforms a standard string that could be inputed by a user into a str that can be transformed into expression by sympy"
     @staticmethod #TODO: optimize this 
-    def transform_into_function(function_string):
+    def transform_into_function(function_string:str)->str:
         if "=" in function_string: return None # We are assuming y = [x expression] form 
         vars = findall(r"[^\s\+\-\/\*\^1-9]", function_string) 
         if vars == []: return None 
