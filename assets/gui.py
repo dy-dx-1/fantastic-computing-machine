@@ -1,6 +1,6 @@
 import tkinter as tk
 from tkinter.constants import NSEW
-from basic_operations import process_result
+from .math_ import process_result
 
 root = tk.Tk()
 root.title("Calculator") 

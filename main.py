@@ -1,4 +1,4 @@
-from gui import set_up_grid, root 
+from assets.gui import set_up_grid, root 
 
 def main():
     set_up_grid() 

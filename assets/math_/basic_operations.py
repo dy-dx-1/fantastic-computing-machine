@@ -1,6 +1,7 @@
 from sympy import symbols, parse_expr, evalf
 x = symbols("x")
-from functions import Function, PolynomialFunction, TranscendentalFunction
+from .functions import Function, PolynomialFunction, TranscendentalFunction # Using relative import since we are going to be calling this from parent 
+
 def process_result(input):  # processes what is currently on the calculator screen 
     if not input.count('(') == input.count(')'): return "Parenthesis's unmatched."
     while " " in input: input = input.replace(" ", "")  
@@ -22,7 +23,6 @@ def process_result(input):  # processes what is currently on the calculator scre
     if Function.find_type(input) == "Polynomial": fun = PolynomialFunction(input) 
     else: fun = TranscendentalFunction(input) 
 
-    print(fun)
     if "d/dx|(" in input:  # Order of checks is important since the lower elifs's are inside the higher checks but not the other way around 
         pass
     elif "∫|(" in input:
